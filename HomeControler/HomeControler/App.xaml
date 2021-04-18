@@ -1,0 +1,55 @@
+﻿<Application x:Class="HomeControler.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             d1p1:Ignorable="d" 
+             xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:HomeControler"
+             xmlns:viewModels="clr-namespace:HomeControler.ViewModels"
+             xmlns:others="clr-namespace:HomeControler.Others"
+             xmlns:views="clr-namespace:HomeControler.Views"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+
+        <ResourceDictionary>
+            <viewModels:ViewModelLocator p6:Key="Locator" p7:IsDataSource="True" xmlns:p7="http://schemas.microsoft.com/expression/blend/2008" xmlns:p6="http://schemas.microsoft.com/winfx/2006/xaml" />
+
+            <DataTemplate DataType="{x:Type viewModels:DashboardViewModel}">
+                <views:DashboardView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:DatabaseDataChartViewModel}">
+                <views:DatabaseDataChartView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+                <views:SettingsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:DatabaseDataViewModel}">
+                <views:DatabaseDataView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:NodeViewModel}">
+                <local:NodeSettings />
+            </DataTemplate>
+
+
+            <!-- MoveThumb Template -->
+            <ControlTemplate x:Key="MoveThumbTemplate" TargetType="{x:Type others:MoveThumb}">
+                <Rectangle Fill="Transparent"/>
+            </ControlTemplate>
+
+            <ControlTemplate x:Key="DesignerItemTemplate" TargetType="Control">
+                <Grid>
+                    <others:MoveThumb Template="{StaticResource MoveThumbTemplate}"
+
+            DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+
+            Cursor="SizeAll"/>
+                    <ContentPresenter Content="{TemplateBinding ContentControl.Content}"/>
+                </Grid>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

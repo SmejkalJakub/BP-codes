@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="HomeControler.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HomeControler.Views"
+             xmlns:top="clr-namespace:HomeControler"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid x:Name="mainCanvas" Background="Beige">
+        <Image Name="imgPhoto" HorizontalAlignment="Center" VerticalAlignment="Center" Source="{Binding BackgroundSource}"/>
+        <Button Content="+" VerticalAlignment="Top" HorizontalAlignment="Right" Command="{Binding AddNewLayoutCommand}" Height="22" Width="20" Margin="0,10,10,0"/>
+
+        <top:NodeSettings x:Name="NodeSettings" 
+                            Margin="600,0,0,0" 
+                            Background="Wheat"
+                            Visibility="Hidden" 
+                            VerticalAlignment="Stretch" 
+                            HorizontalAlignment="Right"/>
+        <Button Content="Change Home Plan" VerticalAlignment="Bottom" HorizontalAlignment="Left" Command="{Binding ChangeLayoutImageButton}" Margin="96,0,0,10" Height="39" Width="108"/>
+        <Button x:Name="saveButton" Content="Save Layout" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10,0,0,10" Click="saveButton_Click" Height="39" Width="74"/>
+
+        <Button Content="{Binding ButtonNames[0]}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="{Binding ButtonPositions[0]}" Command="{Binding ChangeLayoutCommand}" CommandParameter="{Binding ButtonNames[0]}"  MaxHeight="22" MaxWidth="74" Height="22" Width="74">
+            <Button.InputBindings>
+                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ShowToRenameCommand}" CommandParameter="0"/>
+            </Button.InputBindings>
+        </Button>
+
+        <TextBox Text="TEST" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="{Binding TextBoxVisibility}" Margin="{Binding TextBoxPosition}" Height="22" Width="74" MaxHeight="22" MaxLength="15" MaxWidth="74"/>
+
+        <Grid x:Name="controlCanvas">
+
+        </Grid>
+        <Image Source="{Binding CameraLastImage}" Margin="{Binding ImagePosition}" MaxHeight="300" MaxWidth="300"/>
+    </Grid>
+</UserControl>

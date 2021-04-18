@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="HomeControler.Controls.SimpleCamera"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HomeControler"
+             mc:Ignorable="d" 
+             d:DesignHeight="90" d:DesignWidth="80"
+             Template="{StaticResource DesignerItemTemplate}">
+
+    <Grid>
+        <Image MaxWidth="80" MaxHeight="90" Cursor="Hand" MouseEnter="camera_MouseEnter" Source="/security-camera-icon-png-22.jpg" MouseLeave="camera_MouseLeave"/>
+        <Label Visibility="Hidden" Content="Select Icons" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Height="90" IsHitTestVisible="False" Width="80"/>
+    </Grid>
+</UserControl>
