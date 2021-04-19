@@ -127,10 +127,14 @@ python3 -m pip install wheel
 pip3 install homeassistant
 hass &
 
+step "Install MySQL"
+sudo apt install mariadb-server
+echo "For more info please visit https://pimylifeup.com/raspberry-pi-mysql/ and finish the setup"
+
 step "Install wireguard VPN"
 echo "Visit https://pimylifeup.com/raspberry-pi-wireguard/ for detailed information about instalation"
 
 step "Create Wireguard profile"
-echo "Run 'sudo pivpn add' to create your profile and then 'pivpn -qr PROFILENAME' to get QR code that you can scan in the Wireguard mobile app."
+echo "Run 'sudo pivpn add' to create your profile and then 'pivpn -qr PROFILENAME' to get QR code that you can scan in the Wireguard mobile app"
 
 
