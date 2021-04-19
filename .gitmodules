@@ -1,0 +1,3 @@
+[submodule "HomeController"]
+	path = HomeController
+	url = https://github.com/SmejkalJakub/HomeController.git
