@@ -1,3 +1,6 @@
 [submodule "HomeController"]
 	path = HomeController
 	url = https://github.com/SmejkalJakub/HomeController.git
+[submodule "MQTT-Simulator"]
+	path = MQTT-Simulator
+	url = https://github.com/SmejkalJakub/MQTT-Simulator.git
