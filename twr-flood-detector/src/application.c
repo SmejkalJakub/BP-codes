@@ -24,12 +24,15 @@ twr_tick_t nextFloodPublish;
 float temperature;
 twr_tick_t nextTemperaturePublish;
 
+/*
+Event handler for the Battery module
+
+This function will just send the battery percentage and charge over MQTT so it can be monitored
+*/
 void battery_event_handler(twr_module_battery_event_t event, void *event_param)
 {
     float voltage;
     int percentage;
-
-    static char voltageStr[10];
 
     if (twr_module_battery_get_voltage(&voltage))
     {
@@ -38,12 +41,15 @@ void battery_event_handler(twr_module_battery_event_t event, void *event_param)
 
     if (twr_module_battery_get_charge_level(&percentage))
     {
-        snprintf(voltageStr, sizeof(voltageStr), "%d", percentage);
-
-        twr_radio_pub_string("voltage/percentage", voltageStr);
+        twr_radio_pub_int("voltage/percentage", &percentage);
     }
 }
 
+/*
+Event handler for the Flood sensor
+
+This funciton will check alarm state and send the change over MQTT
+*/
 void flood_detector_event_handler(twr_flood_detector_t *self, twr_flood_detector_event_t event, void *event_param)
 {
     bool is_alarm;
@@ -62,6 +68,12 @@ void flood_detector_event_handler(twr_flood_detector_t *self, twr_flood_detector
     }
 }
 
+/*
+Event handler for the Temperature sensor
+
+It will detect the update and send the value over MQTT in case there is a big change or the selected time
+elapsed from the last message
+*/
 void tmp112_event_handler(twr_tmp112_t *self, twr_tmp112_event_t event, void *event_param)
 {
     if (event == TWR_TMP112_EVENT_UPDATE)
@@ -69,7 +81,6 @@ void tmp112_event_handler(twr_tmp112_t *self, twr_tmp112_event_t event, void *ev
         float celsius;
         twr_tmp112_get_temperature_celsius(self, &celsius);
 
-        // Read temperature
         if ((fabs(celsius - temperature) >= VALUE_CHANGE_PUB_TRESHOLD) || (nextTemperaturePublish < twr_scheduler_get_spin_tick()))
         {
             twr_log_debug("APP: temperature: %.2f °C", celsius);
@@ -80,10 +91,14 @@ void tmp112_event_handler(twr_tmp112_t *self, twr_tmp112_event_t event, void *ev
     }
 }
 
+/*
+Init function that runs once at the beginning of the program
+*/
 void application_init(void)
 {
     twr_log_init(TWR_LOG_LEVEL_DUMP, TWR_LOG_TIMESTAMP_ABS);
 
+    // Temperature sensor inicialization
     twr_tmp112_init(&tmp112, TWR_I2C_I2C0, 0x49);
     twr_tmp112_set_event_handler(&tmp112, tmp112_event_handler, NULL);
     twr_tmp112_set_update_interval(&tmp112, 5000);
@@ -92,10 +107,12 @@ void application_init(void)
     twr_flood_detector_set_event_handler(&flood_detector, flood_detector_event_handler, NULL);
     twr_flood_detector_set_update_interval(&flood_detector, 5000);
 
+    // Batery module inicialization
     twr_module_battery_init();
     twr_module_battery_set_event_handler(battery_event_handler, NULL);
     twr_module_battery_set_update_interval(BATTERY_UPDATE_INTERVAL);
 
+    // Radio init and pairing
     twr_radio_init(TWR_RADIO_MODE_NODE_SLEEPING);
     twr_radio_pairing_request("flood-detector", VERSION);
 }

@@ -5,7 +5,6 @@ Autor: Jakub Smejkal
 Datum: 2.4.2021
 */
 
-
 #include <application.h>
 
 #define TEMPERATURE_TAG_PUB_NO_CHANGE_INTEVAL (5 * MINUTE)
@@ -25,7 +24,6 @@ Datum: 2.4.2021
 
 #define LED_BRIGHTNESS_INCREMENT 20
 
-// Thermometer instance
 twr_tmp112_t tmp112;
 float temperature;
 twr_tick_t nextTemperaturePublish;

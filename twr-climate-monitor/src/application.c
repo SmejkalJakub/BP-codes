@@ -7,7 +7,6 @@ Datum: 2.4.2021
 
 #include <application.h>
 
-// Definice maker pro všechny senzory
 #define BATTERY_UPDATE_INTERVAL (60 * MINUTE)
 #define CLIMATE_PUB_NO_CHANGE_INTEVAL (15 * MINUTE)
 #define VALUE_TEMPERATURE_CHANGE_PUB_TRESHOLD 0.2f
@@ -16,7 +15,6 @@ Datum: 2.4.2021
 #define BAROMETER_TAG_PUB_NO_CHANGE_INTEVAL (5 * MINUTE)
 #define PRESSURE_VALUE_CHANGE_PUB_TRESHOLD 10.0f
 
-// Globální proměnné
 float temperature;
 twr_tick_t nextTemperaturePublish;
 
@@ -30,8 +28,9 @@ float pressure;
 twr_tick_t nextPressurePublish;
 
 /*
-Funkce obsluhující battery modul
-Volání funkce proběhne při přerušení vyvolaným událostí na battery modulu
+Event handler for the Battery module
+
+This function will just send the battery percentage and charge over MQTT so it can be monitored
 */
 void battery_event_handler(twr_module_battery_event_t event, void *event_param)
 {
@@ -50,10 +49,10 @@ void battery_event_handler(twr_module_battery_event_t event, void *event_param)
 }
 
 /*
-Funkce, která získává data ze senzorů a následně tato data odesílá pomocí rádia
+This function measures the data from the sensors on climate module and send them over MQTT
 
-Funkce je volána při aktualizaci dat ze senzorů (každých 5000ms),
-data jsou odesílána jen při definované změně nebo časobvém úseku pro ušetření baterií (Makra)
+This function will be called every 5000ms.
+Data will be sent over MQTT if some significant change occurres or after fixed time to save battery life
 */
 void climate_module_event_handler(twr_module_climate_event_t event, void *event_param)
 {
@@ -107,11 +106,14 @@ void climate_module_event_handler(twr_module_climate_event_t event, void *event_
     }
 }
 
-// Inicializační funkce volána jednou při začátku aplikace
+/*
+Init function that runs once at the beginning of the program
+*/
 void application_init(void)
 {
     twr_log_init(TWR_LOG_LEVEL_DUMP, TWR_LOG_TIMESTAMP_ABS);
 
+    // Climate module inicialization
     twr_module_climate_init();
     twr_module_climate_set_event_handler(climate_module_event_handler, NULL);
     twr_module_climate_set_update_interval_thermometer(5000);
@@ -120,10 +122,12 @@ void application_init(void)
     twr_module_climate_set_update_interval_barometer(5000);
     twr_module_climate_measure_all_sensors();
 
+    // Batery module inicialization
     twr_module_battery_init();
     twr_module_battery_set_event_handler(battery_event_handler, NULL);
     twr_module_battery_set_update_interval(BATTERY_UPDATE_INTERVAL);
 
+    // Radio init and pairing
     twr_radio_init(TWR_RADIO_MODE_NODE_SLEEPING);
     twr_radio_pairing_request("climate-monitor", VERSION);
 }
