@@ -49,7 +49,7 @@ const twr_led_strip_buffer_t led_strip_buffer =
 };
 
 /*
-LED strip structure that holds all the data
+LED strip structure that holds all the data about the strip
 */
 static struct
 {
