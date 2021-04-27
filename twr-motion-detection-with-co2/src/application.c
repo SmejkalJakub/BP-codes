@@ -1,10 +1,10 @@
 /*
-Zařízení zajišťující měření klimatických podmínek v místnosti
-Další funkcí je detekce pohybu pomocí PIR čidla
-Všechna data jsou odesílána pomocí rádia
+Device measuring the environmental values in the indoor room
+Next function is the movement detection for security purposes
+All the data are send over the radio
 
-Autor: Jakub Smejkal
-Datum: 2.4.2021
+Author: Jakub Smejkal
+Date: 2.4.2021
 */
 
 #include <application.h>

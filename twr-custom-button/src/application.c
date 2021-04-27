@@ -1,8 +1,8 @@
 /*
-Zařízení, které detekuje stisk tlačítka
+This device will detect a simple button press
 
-Autor: Jakub Smejkal
-Datum: 2.4.2021
+Author: Jakub Smejkal
+Date: 2.4.2021
 */
 
 #include <application.h>

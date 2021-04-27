@@ -15,7 +15,7 @@ Autor: HARDWARIO s.r.o.
 
 #define MINUTE 60 * 1000
 
-void qrcode_project(char *project_name);
+void qrcode_handler(char *project_name);
 void twr_change_qr_value(uint64_t *id, const char *topic, void *value, void *param);
 void lcd_page_with_qr_code();
 

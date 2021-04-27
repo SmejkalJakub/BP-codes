@@ -1,3 +1,16 @@
+/*
+Device with a thermostat function and a possibility to show the QR code to connect to WIFI.
+
+This firmware is a collection of more projects.
+
+https://github.com/hardwario/twr-radio-lcd-thermostat
+https://github.com/hardwario/bcf-radio-qr-wifi-terminal
+
+Author: Jakub Smejkal
+        HARDWARIO s.r.o.
+Date:   2.4.2021
+*/
+
 #include <application.h>
 #include <qrcodegen.h>
 
@@ -15,18 +28,15 @@
 // GFX instance
 twr_gfx_t *gfx;
 
-// LCD buttons instance
-twr_button_t button_left;
-twr_button_t button_right;
-
 float displayed_temperature = NAN;
 
 temperature_params temperature_param = { .next_pub = 0, .value = NAN };
 temperature_params thermostat_set_point;
 
-// QR code variables
+// QR code data values
 char qr_code[150];
 
+// Custom MQTT topic for getting the QR code data
 static const twr_radio_sub_t subs[] = {
     {"qr/-/chng/code", TWR_RADIO_SUB_PT_STRING, twr_change_qr_value, (void *) PASSWD}
 };
@@ -34,6 +44,11 @@ static const twr_radio_sub_t subs[] = {
 uint32_t display_page_index = 0;
 twr_tmp112_t temp;
 
+/*
+Event handler for the Battery module
+
+This function will just send the battery percentage and charge over MQTT so it can be monitored
+*/
 void battery_event_handler(twr_module_battery_event_t event, void *event_param)
 {
     float voltage;
@@ -50,6 +65,12 @@ void battery_event_handler(twr_module_battery_event_t event, void *event_param)
     }
 }
 
+/*
+Event handler for the Temperature sensor
+
+It will detect the update and send the value over MQTT in case there is a big change or the selected time
+elapsed from the last message
+*/
 void tmp112_event_handler(twr_tmp112_t *self, twr_tmp112_event_t event, void *event_param)
 {
     if (event == TWR_TMP112_EVENT_UPDATE)
@@ -84,11 +105,13 @@ void tmp112_event_handler(twr_tmp112_t *self, twr_tmp112_event_t event, void *ev
     }
 }
 
+/*
+This function will be called when the message on a custom topic is received and it will change the QR code value
+*/
 void twr_change_qr_value(uint64_t *id, const char *topic, void *value, void *param)
 {
     strncpy(qr_code, value, sizeof(qr_code));
     char ch = ';';
-    strncat(qr_code, &ch, 1);
     strncat(qr_code, &ch, 1);
 
     twr_eeprom_write(0, qr_code, sizeof(qr_code));
@@ -119,6 +142,17 @@ static void print_qr(const uint8_t qrcode[])
     twr_gfx_update(gfx);
 }
 
+/*
+Event handler for the LCD module
+
+This function will taky care of all the LCD operations. Mostly it handles the button presses.
+
+On left button click it will decrease the set point temperature by static value
+On left button click it will increase the set point temperature by static value
+
+On right button hold it will change the page on display
+
+*/
 void lcd_event_handler(twr_module_lcd_event_t event, void *event_param)
 {
     if(event == TWR_MODULE_LCD_EVENT_RIGHT_HOLD)
@@ -186,7 +220,10 @@ void lcd_event_handler(twr_module_lcd_event_t event, void *event_param)
     }
 }
 
-void qrcode_project(char *text)
+/*
+This function will call the qr code encoder and then print the QR code to the display
+*/
+void qrcode_handler(char *text)
 {
     twr_system_pll_enable();
 
@@ -203,6 +240,9 @@ void qrcode_project(char *text)
     twr_system_pll_disable();
 }
 
+/*
+Init function that runs once at the beginning of the program
+*/
 void application_init(void)
 {
     twr_log_init(TWR_LOG_LEVEL_DUMP, TWR_LOG_TIMESTAMP_ABS);
@@ -249,6 +289,11 @@ void application_init(void)
     twr_radio_pairing_request("thermostat-with-qr-terminal", VERSION);
 }
 
+/*
+This function will run in a loop for the whole duration of the app.
+
+It will take care of redrawing the data on the LCD display and changing the pages
+*/
 void application_task(void)
 {
     if(display_page_index == 0)
@@ -286,6 +331,6 @@ void application_task(void)
     }
     if(display_page_index == 1)
     {
-        qrcode_project(qr_code);
+        qrcode_handler(qr_code);
     }
 }

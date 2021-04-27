@@ -1,8 +1,8 @@
 /*
-Zařízení pro monitorování kvality ovzduší s možností integrace programovatelného LED pásku
+Device for monitoring air quality with a possible integration of programable LED strip
 
-Autor: Jakub Smejkal
-Datum: 2.4.2021
+Author: Jakub Smejkal
+Date: 2.4.2021
 */
 
 #include <application.h>
@@ -48,6 +48,9 @@ const twr_led_strip_buffer_t led_strip_buffer =
     .buffer = _twr_module_power_led_strip_dma_buffer
 };
 
+/*
+LED strip structure that holds all the data
+*/
 static struct
 {
     enum
@@ -74,6 +77,9 @@ bool twrLEDStripOn = true;
 
 void led_strip_change_state();
 
+/*
+Radio callback to when the relay on the power module should be set to some value
+*/
 void twr_radio_node_on_state_set(uint64_t *id, uint8_t state_id, bool *state)
 {
     if (state_id == TWR_RADIO_NODE_STATE_POWER_MODULE_RELAY)
@@ -84,6 +90,9 @@ void twr_radio_node_on_state_set(uint64_t *id, uint8_t state_id, bool *state)
     }
 }
 
+/*
+Radio callback to when the LED strip effect should be changed
+*/
 void twr_radio_node_on_led_strip_effect_set(uint64_t *id, twr_radio_node_led_strip_effect_t type, uint16_t wait, uint32_t *color)
 {
     led_strip.currentState = type + 1;
@@ -154,23 +163,14 @@ void twr_radio_node_on_led_strip_effect_set(uint64_t *id, twr_radio_node_led_str
     }
 }
 
-void twr_radio_node_on_led_strip_color_set(uint64_t *id, uint32_t *color)
-{
-    twrLEDStripOn = true;
 
-    twr_led_strip_effect_stop(&led_strip.self);
 
-    led_strip.color = *color;
+/*
+Event handler for the Temperature sensor
 
-    led_strip.show = LED_STRIP_SHOW_COLOR;
-
-    led_strip.currentState = 0;
-
-    led_strip_change_state();
-
-    twr_scheduler_plan_now(update_led_task_id);
-}
-
+It will detect the update and send the value over MQTT in case there is a big change or the selected time
+elapsed from the last message
+*/
 void tmp112_event_handler(twr_tmp112_t *self, twr_tmp112_event_t event, void *event_param)
 {
     if (event == TWR_TMP112_EVENT_UPDATE)
@@ -188,7 +188,12 @@ void tmp112_event_handler(twr_tmp112_t *self, twr_tmp112_event_t event, void *ev
     }
 }
 
+/*
+Event handler for the Barometer tag
 
+It will detect the update and send the value over MQTT in case there is a big change or the selected time
+elapsed from the last message
+*/
 void barometer_tag_event_handler(twr_tag_barometer_t *self, twr_tag_barometer_event_t event, void *event_param)
 {
     if(event == TWR_TAG_BAROMETER_EVENT_UPDATE)
@@ -205,6 +210,12 @@ void barometer_tag_event_handler(twr_tag_barometer_t *self, twr_tag_barometer_ev
     }
 }
 
+/*
+Event handler for the Humidity tag
+
+It will detect the update and send the value over MQTT in case there is a big change or the selected time
+elapsed from the last message
+*/
 void humidity_tag_event_handler(twr_tag_humidity_t *self, twr_tag_humidity_event_t event, void *event_param)
 {
     if(event == TWR_TAG_HUMIDITY_EVENT_UPDATE)
@@ -221,6 +232,12 @@ void humidity_tag_event_handler(twr_tag_humidity_t *self, twr_tag_humidity_event
     }
 }
 
+/*
+Event handler for the VOC tag
+
+It will detect the update and send the value over MQTT in case there is a big change or the selected time
+elapsed from the last message
+*/
 void voc_lp_event_handler(twr_tag_voc_lp_t *self, twr_tag_voc_lp_event_t event, void *event_param)
 {
     if(event == TWR_TAG_VOC_LP_EVENT_UPDATE)
@@ -238,12 +255,38 @@ void voc_lp_event_handler(twr_tag_voc_lp_t *self, twr_tag_voc_lp_event_t event, 
     }
 }
 
+/*
+Radio callback when the brightness of LED strip should be changed
+*/
 void twr_radio_node_on_led_strip_brightness_set(uint64_t *id, uint8_t *brightness)
 {
     twr_led_strip_set_brightness(&led_strip.self, *brightness);
     twr_scheduler_plan_now(update_led_task_id);
 }
 
+/*
+Radio callback to when the color of LED strip should be changed
+*/
+void twr_radio_node_on_led_strip_color_set(uint64_t *id, uint32_t *color)
+{
+    twrLEDStripOn = true;
+
+    twr_led_strip_effect_stop(&led_strip.self);
+
+    led_strip.color = *color;
+
+    led_strip.show = LED_STRIP_SHOW_COLOR;
+
+    led_strip.currentState = 0;
+
+    led_strip_change_state();
+
+    twr_scheduler_plan_now(update_led_task_id);
+}
+
+/*
+This function will scroll all the pre programed effects on the LED strip so you can choose what suits you
+*/
 void led_strip_change_state()
 {
     led_strip.show = LED_STRIP_SHOW_EFFECT;
@@ -301,9 +344,19 @@ void led_strip_change_state()
     }
 }
 
+/*
+Event handler for the Encoder module
+
+The encoder module will take care about the brightness, changing effect and color of the LED strip
+
+On the encoder rotation to the right the brightness will increase
+On the encoder rotation to the left the brightness will decrease
+
+On the encoder knob hold it will turn the LED strip on/off
+On the encoder knob click it will change the effect so you can scroll through all the pre programed effects
+*/
 void encoder_event_handler(twr_module_encoder_event_t event, void *event_param)
 {
-
     if(event == TWR_MODULE_ENCODER_EVENT_CLICK)
     {
         led_strip.currentState++;
@@ -360,6 +413,9 @@ void encoder_event_handler(twr_module_encoder_event_t event, void *event_param)
     }
 }
 
+/*
+LED strip update task that will write the values to the LED strip periodically
+*/
 void led_strip_update_task(void *param)
 {
     if (!twr_led_strip_is_ready(&led_strip.self))
@@ -383,6 +439,9 @@ void led_strip_update_task(void *param)
     twr_scheduler_plan_current_relative(250);
 }
 
+/*
+Init function that runs once at the beginning of the program
+*/
 void application_init(void)
 {
     twr_log_init(TWR_LOG_LEVEL_DUMP, TWR_LOG_TIMESTAMP_ABS);

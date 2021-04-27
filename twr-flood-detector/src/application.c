@@ -1,8 +1,8 @@
 /*
-Zařízení pro detekci zatopení
+Device for a simple water flood detection
 
-Autor: Jakub Smejkal
-Datum: 2.4.2021
+Author: Jakub Smejkal
+Date: 2.4.2021
 */
 #include <application.h>
 

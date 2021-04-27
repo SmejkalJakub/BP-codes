@@ -1,8 +1,8 @@
 /*
-Zařízení pro monitorování klimatických podmínek
+Device for monitoring the environmental values in indoor or outdoor
 
-Autor: Jakub Smejkal
-Datum: 2.4.2021
+Author: Jakub Smejkal
+Date: 2.4.2021
 */
 
 #include <application.h>

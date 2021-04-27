@@ -1,9 +1,9 @@
 /*
-Zařízení měřící teplotu a detekující pohyb
-Údaje o teplotě a pohybu jsou odesílány rádiem
+Device that measures temperature and movement
+Data will be send over the radio
 
-Autor: Jakub Smejkal
-Datum: 2.4.2021
+Author: Jakub Smejkal
+Date: 2.4.2021
 */
 
 #include <application.h>
