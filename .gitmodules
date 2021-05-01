@@ -4,3 +4,6 @@
 [submodule "MQTT-Simulator"]
 	path = MQTT-Simulator
 	url = https://github.com/SmejkalJakub/MQTT-Simulator.git
+[submodule "node-red-contrib-hardwario-power-module"]
+	path = node-red-contrib-hardwario-power-module
+	url = https://github.com/hardwario/node-red-contrib-hardwario-power-module.git
