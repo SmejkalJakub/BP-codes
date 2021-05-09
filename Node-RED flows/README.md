@@ -53,6 +53,12 @@ This example takes care about getting the temperature and voltage on the hardwar
 
 In case of more devices presented the ``node/home/bathroom`` prefix should be kept.  
 
+### Garage
+This example shows how the garage can be set up. The flow takes care about temperature, humidity and VOC. Next to that there is a thermostat and movement sensor that can send the alarm.
+
+In case of more devices presented the ``node/garage/`` prefix should be kept.  
+
+
 ### IKEA Smart Lights
 This flow shows example on how to use Node-RED to control smart lights from IKEA. For correctness the lights that are in a specific room should be in a flow for that room. The flow takes care about getting the lights state and sending it to the Blynk app. It also gets the mqtt messages and set the desired state to the light.
 
